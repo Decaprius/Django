@@ -10,10 +10,13 @@
                 <div class="card-body">
                   <h5 class="card-title">{{artikel.name}}</h5>
                   <p class="card-text">{{artikel.beschreibung}}</p>
-                  <a href="#" class="btn btn-secondary">Bestellen</a>
+                  <div class="d-flex justify-content-between">
+                    <h5 class="text-secondary">{{artikel.preis|floatformat:2}}€</h5>
+                    <a href="#" class="btn btn-outline-danger">Bestellen</a>
+                  </div>
                 </div>
               </div>
         </div>
-        {% endfor %}
+      {% endfor %}  
     </div>
 {% endblock content %}

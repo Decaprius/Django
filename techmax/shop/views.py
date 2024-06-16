@@ -5,7 +5,7 @@ from . models import *
 
 def shop(request):
     artikels = Artikel.objects.all()
-    ctx = {'artikels:':artikels}
+    ctx = {'artikels':artikels}
     return render(request, 'shop/shop.html', ctx)
 
 def warenkorb(request):
@@ -13,3 +13,5 @@ def warenkorb(request):
 
 def kasse(request):
     return render(request, 'shop/kasse.html')
+    
+    
