@@ -102,3 +102,8 @@ def regBenutzer(request):
 
     ctx = {'form': form, 'seite': seite}
     return render(request, 'shop/login.html', ctx)
+
+def bestellen(request):
+    print(request.body)
+    messages.success(request, "Vielen Dank für Ihre Bestellung!")
+    return JsonResponse('Bestellung erfolgreich', safe=False)

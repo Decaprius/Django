@@ -24,6 +24,7 @@ function updateKundenBestellung(artikelID, action){
 
 //Kasse
 let formular = document.getElementById('formular')
+let gesamtpreis = document.getElementById('gesamtpreis').value
 
 formular.addEventListener('submit', function(e){
     e.preventDefault()
@@ -35,6 +36,30 @@ document.getElementById('bezahlen-button').addEventListener('click', function(e)
     submitFormular()
 })
 
+//Forumlar
 function submitFormular(){
-    alert('Bestellung aufgegeben.')
+    let benutzerDaten = {
+        'name': formular.inputName.value,
+        'email': formular.inputEmail.value,
+        'gesamtpreis': gesamtpreis
+    }
+    let lieferadresse = {
+        'adresse': formular.inputAdresse.value,
+        'plz': formular.inputPlz.value,
+        'stadt': formular.inputStadt.value,
+        'land': formular.inputLand.value,
+    }
+    
+    let url = "/bestellen/";
+
+
+    fetch(url, {
+        method: 'post',
+        headers:{
+            'Content-Type':'application/json',
+            'X-CSRFToken':csrftoken,
+        },
+        body:JSON.stringify({'benutzerDaten':benutzerDaten, 'lieferadresse':lieferadresse})
+    })
+    .then(()=>window.location.href="/")
 }
