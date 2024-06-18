@@ -4,8 +4,34 @@ for (let i = 0; i < bestellenButtons.length; i++){
     bestellenButtons[i].addEventListener('click', function(){
         let artikelID = this.dataset.artikel;
         let action = this.dataset.action;
-        updateKundenBestellung(artikelID, action)
+        
+        if(benutzer == 'AnonymousUser'){
+            updateGastBestellung(artikelID, action)
+        } else{
+            updateKundenBestellung(artikelID, action)
+        }
     })
+}
+
+function updateGastBestellung(artikelID, action){
+    //console.log("Gast " +artikelID+" "+action)
+    if(action == 'bestellen'){
+        if(warenkorb[artikelID] == undefined){
+            warenkorb[artikelID] = {'menge':1}
+        } else{
+            warenkorb[artikelID]['menge'] +=1
+        }
+    }
+    if(action == 'entfernen'){
+        warenkorb[artikelID]['menge'] -=1
+
+        if(warenkorb[artikelID]['menge'] <=0){
+            delete warenkorb[artikelID]
+        }
+    }
+    document.cookie = 'warenkorb=' + JSON.stringify(warenkorb) + ";domain;path=/; SameSite=None; Secure"
+    console.log(warenkorb)
+    location.reload()
 }
 
 function updateKundenBestellung(artikelID, action){
@@ -36,7 +62,6 @@ document.getElementById('bezahlen-button').addEventListener('click', function(e)
     submitFormular()
 })
 
-//Forumlar
 function submitFormular(){
     let benutzerDaten = {
         'name': formular.inputName.value,
@@ -49,9 +74,9 @@ function submitFormular(){
         'stadt': formular.inputStadt.value,
         'land': formular.inputLand.value,
     }
+    console.log(benutzerDaten, lieferadresse)
     
     let url = "/bestellen/";
-
 
     fetch(url, {
         method: 'post',
