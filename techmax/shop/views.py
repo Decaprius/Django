@@ -8,6 +8,7 @@ from django.contrib.auth import authenticate, login, logout
 from . forms import EigeneUserCreationForm
 import uuid
 from django.utils.safestring import mark_safe
+from . viewtools import gastCookie
 
 # Create your views here.
 
@@ -22,32 +23,9 @@ def warenkorb(request):
         bestellung, created = Bestellung.objects.get_or_create(kunde=kunde, erledigt=False)
         artikels = bestellung.bestellteartikel_set.all()
     else:
-        try:
-            warenkorb = json.loads(request.COOKIES['warenkorb'])
-        except:
-            warenkorb = {}
-
-        artikels = []
-        bestellung = {'get_gesamtpreis':0, 'get_gesamtmenge':0}
-        menge = bestellung['get_gesamtmenge']
-        
-        for i in warenkorb:
-            menge += warenkorb[i]["menge"]
-            artikel = Artikel.objects.get(id=i)
-            gesamtpreis = (artikel.preis * warenkorb[i]['menge'])
-            bestellung['get_gesamtpreis'] += gesamtpreis
-
-            artikel = {
-                'artikel':{
-                    'id':artikel.id,
-                    'name':artikel.name,
-                    'preis':artikel.preis,
-                    'bild':artikel.bild
-                },
-                'menge':warenkorb[i]['menge'],
-                'get_summe':gesamtpreis
-            }
-            artikels.append(artikel)
+        cookieDaten = gastCookie(request)
+        artikels = cookieDaten['artikels']
+        bestellung = cookieDaten['bestellung']
 
     ctx = {"artikels":artikels, "bestellung":bestellung}        
     return render(request, 'shop/warenkorb.html',ctx)
@@ -58,8 +36,9 @@ def kasse(request):
         bestellung, created = Bestellung.objects.get_or_create(kunde=kunde, erledigt=False)
         artikels = bestellung.bestellteartikel_set.all()
     else:
-        artikels = []
-        bestellung = []
+        cookieDaten = gastCookie(request)
+        artikels = cookieDaten['artikels']
+        bestellung = cookieDaten['bestellung']
 
     ctx = {"artikels":artikels, "bestellung":bestellung}      
     return render(request, 'shop/kasse.html', ctx)
