@@ -31,3 +31,25 @@ def gastCookie(request):
         artikels.append(artikel)
 
     return{'artikels':artikels, 'bestellung':bestellung}
+
+def gastBestellung(request, daten):
+    name = daten['benutzerDaten']['name']
+    email = daten['benutzerDaten']['email']
+
+    cookieDaten = gastCookie(request)
+    artikels = cookieDaten['artikels']
+
+    kunde, created = Kunde.objects.get_or_create(email=email)
+    kunde.name = name
+    kunde.save()
+
+    bestellung = Bestellung.objects.create(kunde=kunde, erledigt=False)
+
+    for i in artikels:
+        artikel = Artikel.objects.get(id=i['artikel']['id'])
+        bestellteArtikel = BestellteArtikel.objects.create(
+            artikel=artikel,
+            bestellung=bestellung,
+            menge=i['menge']
+        )
+    return kunde, bestellung    
