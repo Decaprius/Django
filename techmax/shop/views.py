@@ -5,6 +5,7 @@ from django.http import JsonResponse
 import json
 from django.contrib.auth import authenticate, login, logout
 from . forms import EigeneUserCreationForm
+import uuid
 
 # Create your views here.
 
@@ -104,6 +105,28 @@ def regBenutzer(request):
     return render(request, 'shop/login.html', ctx)
 
 def bestellen(request):
-    print(request.body)
+    auftrags_id = uuid.uuid4()
+    daten = json.loads(request.body)
+
+    if request.user.is_authenticated:
+        kunde = request.user.kunde
+        bestellung, created = Bestellung.objects.get_or_create(kunde=kunde, erledigt=False)
+        gesamtpreis = float(daten['benutzerDaten']['gesamtpreis'])
+        bestellung.auftrags_id = auftrags_id
+        bestellung.erledigt = True
+        bestellung.save()
+
+        Adresse.objects.create(
+            kunde=kunde,
+            bestellung=bestellung,
+            adresse=daten['lieferadresse']['adresse'],
+            plz=daten['lieferadresse']['plz'],
+            stadt=daten['lieferadresse']['stadt'],
+            land=daten['lieferadresse']['land'],
+        )
+
+    else:
+        print("nicht eingeloggt")        
+
     messages.success(request, "Vielen Dank für Ihre Bestellung!")
     return JsonResponse('Bestellung erfolgreich', safe=False)
