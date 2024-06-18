@@ -143,3 +143,5 @@ def bestellung(request,id):
     else:
         return redirect('shop')
     
+def fehler404(request, exception):
+    return render(request, 'shop/404.html')
