@@ -1,3 +1,6 @@
+## SSE Web.vzB.22 SoSe24: "Gruppenprojekt" Django
+- Michael Fössinger
+
 ## Wie man das Projekt aufsetzt (VS Code):
 - pip install pipenv
 - pipenv install django
